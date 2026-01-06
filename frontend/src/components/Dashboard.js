@@ -40,19 +40,6 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const fetchDashboardStats = async () => {
-    try {
-      const response = await mockApi.getDashboardStats();
-      setStats(response);
-      setError(null);
-    } catch (err) {
-      setError('Failed to fetch dashboard statistics');
-      console.error('Dashboard stats error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const topIPColumns = [
     {
       title: 'Source IP',

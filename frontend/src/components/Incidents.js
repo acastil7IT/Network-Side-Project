@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Table, Tag, Button, Space, Modal, Select, message } from 'antd';
 import { ExclamationCircleOutlined, CheckOutlined } from '@ant-design/icons';
-import axios from 'axios';
+import mockApi from '../services/mockApi';
 import moment from 'moment';
 
 const { Option } = Select;
@@ -14,38 +14,30 @@ const Incidents = () => {
     status: null
   });
 
-  useEffect(() => {
-    fetchIncidents();
-  }, [filters]);
-
-  const fetchIncidents = async () => {
+  const fetchIncidents = useCallback(async () => {
     try {
       setLoading(true);
-      const params = new URLSearchParams();
-      if (filters.severity) params.append('severity', filters.severity);
-      if (filters.status) params.append('status', filters.status);
-
-      const response = await axios.get(`http://localhost:8001/api/incidents?${params}`, {
-        headers: {
-          'Authorization': 'Bearer demo-token'
-        }
+      const response = await mockApi.getIncidents({
+        severity: filters.severity,
+        status: filters.status,
+        limit: 50
       });
-      setIncidents(response.data);
+      setIncidents(response);
     } catch (error) {
       message.error('Failed to fetch incidents');
       console.error('Incidents fetch error:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters.severity, filters.status]);
+
+  useEffect(() => {
+    fetchIncidents();
+  }, [fetchIncidents]);
 
   const handleAcknowledge = async (incidentId) => {
     try {
-      await axios.post(`http://localhost:8001/api/incidents/${incidentId}/acknowledge`, {}, {
-        headers: {
-          'Authorization': 'Bearer demo-token'
-        }
-      });
+      await mockApi.acknowledgeIncident(incidentId);
       message.success('Incident acknowledged');
       fetchIncidents();
     } catch (error) {
@@ -60,11 +52,7 @@ const Incidents = () => {
       content: 'Are you sure you want to resolve this incident?',
       onOk: async () => {
         try {
-          await axios.post(`http://localhost:8001/api/incidents/${incidentId}/resolve`, {}, {
-            headers: {
-              'Authorization': 'Bearer demo-token'
-            }
-          });
+          await mockApi.resolveIncident(incidentId);
           message.success('Incident resolved');
           fetchIncidents();
         } catch (error) {

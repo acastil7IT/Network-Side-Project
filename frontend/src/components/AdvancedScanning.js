@@ -8,7 +8,6 @@ import {
   PlayCircleOutlined,
   StopOutlined
 } from '@ant-design/icons';
-import axios from 'axios';
 
 const { Option } = Select;
 const { TabPane } = Tabs;

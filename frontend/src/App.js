@@ -5,7 +5,6 @@ import {
   DashboardOutlined,
   AlertOutlined,
   GlobalOutlined,
-  SettingOutlined,
   SecurityScanOutlined,
   BugOutlined
 } from '@ant-design/icons';
